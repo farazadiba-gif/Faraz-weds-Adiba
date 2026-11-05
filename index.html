@@ -57,6 +57,8 @@ h2.script{font-size:clamp(2.4rem,9vw,3.4rem);line-height:1.1;margin-bottom:.4rem
 .btn{display:inline-block;margin:.35rem;padding:.7rem 1.4rem;border:1px solid var(--gold);border-radius:40px;background:transparent;color:var(--brown);font:inherit;font-size:1rem;text-decoration:none;cursor:pointer;transition:background .3s,color .3s}
 .btn:hover,.btn:focus-visible{background:var(--gold);color:#fff;outline:none}
 .btn.solid{background:linear-gradient(135deg,#c9a45c,#a97f36);color:#fff;border-color:transparent}
+.cabbox{max-width:360px;margin:1rem auto;padding:1rem 1.2rem;border:1px solid var(--gold-l);border-radius:6px 6px 30px 30px;background:rgba(255,252,245,.7);display:grid;gap:.6rem}
+.cabbox .btn{margin:0;display:block;text-align:center}
 .section{padding:4.5rem 1.4rem;max-width:760px;margin:auto;text-align:center}
 .section.alt{max-width:none;background:linear-gradient(180deg,var(--cream),var(--ivory))}
 .section.alt>*{max-width:760px;margin-inline:auto}
@@ -98,6 +100,12 @@ h2.script{font-size:clamp(2.4rem,9vw,3.4rem);line-height:1.1;margin-bottom:.4rem
 #veil{position:fixed;inset:0;z-index:45;background:var(--ivory);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;opacity:0;visibility:hidden;transition:opacity 1.2s,visibility 1.2s}
 #veil.on{opacity:1;visibility:visible}
 .hide{display:none!important}
+.copybox{display:grid;gap:.6rem;padding:.6rem;border:1px solid var(--gold-l);border-radius:10px;background:rgba(255,252,245,.6);transition:background .25s,border-color .25s,box-shadow .25s}
+.copybox:active,.copybox.flash{background:#ecd9a8;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,146,74,.25)}
+.copybox textarea{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:#fffdf8;border:1px solid var(--gold-l);border-radius:8px;padding:.6rem .7rem;resize:none;text-align:left;line-height:1.5;transition:background .25s}
+.copybox.flash textarea{background:#fff7e3}
+.copybox .btn{margin:0}
+.copybox .btn.done{background:var(--brown);color:#fff;border-color:var(--brown)}
 footer{padding:3rem 1.4rem 5rem;text-align:center;font-size:.9rem;color:var(--brown)}
 @media(prefers-reduced-motion:reduce){.shine,.lantern{animation:none!important}*{animation-duration:.01s!important;animation-delay:0s!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
@@ -172,6 +180,7 @@ const phase = () => q.get('phase') || (Date.now() >= E('nikah') ? 'walima' : 'ni
 const enc = encodeURIComponent;
 const toCount = () => { const c = $('#count'); if (c) window.scrollTo({top:c.offsetTop, behavior:'instant'}); };
 const fmt = n => String(n).padStart(2,'0');
+let curEv = null;                                         // event currently on screen
 
 /* ---- hanging lanterns ---- */
 const LANTERN = c => `<svg class="lantern ${c}" viewBox="0 0 40 120" aria-hidden="true">
@@ -192,8 +201,53 @@ $('#g-msg').textContent = C.message;
 const dateTxt = () => (phase()==='walima'?C.walimaEvent:C.nikahEvent).dateText;
 $('#g-date').textContent = dateTxt();
 
+/* ---- cab links: pickup = live location, drop = venue ---- */
+function cabLinks(ev){
+  return {
+    uber:  `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[nickname]=${enc(ev.venue)}&dropoff[formatted_address]=${enc(ev.address)}`,
+    ola:   `https://book.olacabs.com/?serviceType=p2p&utm_source=invite&drop_name=${enc(ev.venue)}&drop_address=${enc(ev.address)}`,
+    rapido:`https://www.rapido.bike/`
+  };
+}
+
+/* ---- show "Copied" feedback and flash the copy box (only after a real copy) ---- */
+function flashCopied(){
+  const box = document.querySelector('.copybox'), btn = $('#copy-venue');
+  if (box) box.classList.add('flash');
+  if (btn){ btn.textContent = 'Copied ✓'; btn.classList.add('done'); }
+  clearTimeout(flashCopied.t);
+  flashCopied.t = setTimeout(() => {
+    if (box) box.classList.remove('flash');
+    if (btn){ btn.textContent = 'Copy venue address'; btn.classList.remove('done'); }
+  }, 2000);
+}
+
+/* ---- copy venue address so it can be pasted as the drop point ---- */
+async function copyVenue(ev){
+  const text = `${ev.venue}, ${ev.address}`;
+  const msg = $('#cab-msg'); if (!msg) return;
+  try{
+    await navigator.clipboard.writeText(text);
+    msg.textContent = 'Venue address copied. Paste it as the drop location in your cab app.';
+    flashCopied();
+  }catch(err){
+    const ta = $('#venue-addr');
+    if (ta){ ta.removeAttribute('readonly'); ta.focus(); ta.select(); }
+    let ok = false;
+    try{ ok = document.execCommand('copy'); }catch(e){}
+    if (ta) ta.setAttribute('readonly','');
+    if (ok){
+      msg.textContent = 'Venue address copied. Paste it as the drop location in your cab app.';
+      flashCopied();
+    } else {
+      msg.textContent = 'Address selected. Press Ctrl+C (or long-press and tap Copy) to copy it.';
+    }
+  }
+}
+
 function render(p){
-  const ev = p==='walima' ? C.walimaEvent : C.nikahEvent, target = T(p);
+  const ev = p==='walima' ? C.walimaEvent : C.nikahEvent, target = T(p), cab = cabLinks(ev);
+  curEv = ev;
   document.title = `${C.groom} & ${C.bride} – ${ev.title}`;
   $('#app').innerHTML = `
   <section class="stage" style="min-height:92svh">
@@ -238,6 +292,18 @@ function render(p){
       <a class="btn solid" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${enc(ev.mapQuery)}">Open in Google Maps</a>
       <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${enc(ev.mapQuery)}">Get directions</a>
       <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${enc(ev.mapQuery)}&travelmode=driving&dir_action=navigate">Start navigation</a>
+      <button class="btn" id="cab-btn" type="button">Book a cab</button>
+    </div>
+    <div id="cab" class="cabbox hide">
+      <p class="sub">Pickup is your live location. Drop is the venue.</p>
+      <div class="copybox">
+        <textarea id="venue-addr" readonly rows="3">${ev.venue}, ${ev.address}</textarea>
+        <button class="btn solid" type="button" id="copy-venue">Copy venue address</button>
+      </div>
+      <p id="cab-msg" class="sub" style="letter-spacing:.04em;text-transform:none"></p>
+      <a class="btn" target="_blank" rel="noopener" href="${cab.uber}">Uber</a>
+      <a class="btn" target="_blank" rel="noopener" href="${cab.ola}">Ola</a>
+      <a class="btn" target="_blank" rel="noopener" href="${cab.rapido}">Rapido</a>
     </div>
     <div class="info">
       <div><h4>Nearby landmarks</h4>${ev.landmarks.join('<br>')}</div>
@@ -263,6 +329,14 @@ function render(p){
   <footer>Made with love</footer>`;
   tick();
 }
+
+/* ---- show / hide cab options (opening does NOT copy) ---- */
+/* ---- copy only when the Copy button is pressed ---- */
+document.addEventListener('click', e => {
+  if (e.target.closest('#copy-venue')) { if (curEv) copyVenue(curEv); return; }
+  if (!e.target.closest('#cab-btn')) return;
+  $('#cab').classList.toggle('hide');
+});
 
 /* ---- countdown ---- */
 function tick(){

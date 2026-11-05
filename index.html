@@ -88,6 +88,7 @@ h2.script{font-size:clamp(2.4rem,9vw,3.4rem);line-height:1.1;margin-bottom:.4rem
 #gate .s2{margin-top:clamp(1.2rem,5vh,3rem)}
 @media(orientation:landscape) and (max-height:520px){#gate .s2{margin-top:.4rem}}
 #gate #open{font-size:1.44rem;padding:1.01rem 2.02rem;margin-top:clamp(.8rem,3.5vh,1.6rem)}
+#g-to{font-size:1.35rem;color:var(--brown);margin-bottom:.3rem;letter-spacing:.06em}
 #g-msg{font-size:1.64rem;line-height:1.35;margin-bottom:.5rem}
 #g-date{font-size:1.56rem;margin-bottom:.4rem}
 /* cinematic opening: one sequence */
@@ -131,6 +132,7 @@ const CONFIG = {
   nikahEvent: {
     img:"img/img1.jpg",
     title:"Nikah", dateText:"Friday, 20 November 2026", timeText:"8:15 PM",
+    startLocal:"2026-11-20T20:15", endLocal:"2026-11-20T23:30",   // used for Add to calendar
     dinner:"Dinner follows from 9:00 PM",
     schedule:[["8:30 PM","Guest arrival"],["8:30 PM","Dua & congratulations"],["9:00 PM","Dinner"]],
     note:"Kindly arrive 10 minutes early.",
@@ -141,6 +143,7 @@ const CONFIG = {
   walimaEvent: {
     img:"img/img2.jpg",
     title:"Walima", dateText:"Saturday, 21 November 2026", timeText:"7:00 PM",
+    startLocal:"2026-11-21T19:00", endLocal:"2026-11-21T23:00",   // used for Add to calendar
     dinner:"Dinner follows from 9:00 PM",
     schedule:[["7:00 PM","Guest arrival"],["8:00 PM","Bride & groom entrance"],["9:00 PM","Dinner"],["10:30 PM","Dua & photographs"]],
     note:"We look forward to celebrating with you.",
@@ -161,6 +164,7 @@ const CONFIG = {
     <div class="flora l"></div><div class="flora r"></div>
     <div class="in gin">
       <div class="ar bism seq s1"><span class="shine">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span></div>
+      <p class="seq s2" id="g-to" style="display:none"></p>
       <div class="seq s2"><div class="script names shine" id="g-b"></div><div class="script amp shine">&amp;</div><div class="script names shine" id="g-g"></div></div>
       <div class="div seq s3">◆</div>
       <p class="seq s3" id="g-msg" style="font-style:italic"></p>
@@ -223,6 +227,13 @@ $('#g-msg').textContent = C.message;
 const dateTxt = () => (phase()==='walima'?C.walimaEvent:C.nikahEvent).dateText;
 $('#g-date').textContent = dateTxt();
 
+/* ---- guest name: link like ?to=Ahmed+Uncle shows "Dear Ahmed Uncle" ---- */
+const guestName = (q.get('to') || '').trim().slice(0, 60);
+if (guestName) {
+  $('#g-to').textContent = `Dear ${guestName}`;            // textContent keeps it safe from HTML injection
+  $('#g-to').style.display = 'block';
+}
+
 /* ---- cab links: pickup = live location, drop = venue ---- */
 function cabLinks(ev){
   return {
@@ -230,6 +241,42 @@ function cabLinks(ev){
     ola:   `https://book.olacabs.com/?serviceType=p2p&utm_source=invite&drop_name=${enc(ev.venue)}&drop_address=${enc(ev.address)}`,
     rapido:`https://www.rapido.bike/`
   };
+}
+
+/* ---- add to calendar: builds an .ics file for the event on screen ---- */
+function icsEscape(s){
+  return String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+}
+function icsDate(local){                                  // "2026-11-20T20:15" -> "20261120T201500"
+  return local.replace(/[-:]/g,'') + '00';
+}
+function addToCalendar(ev){
+  const stamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Faraz and Adiba Wedding//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${ev.title.toLowerCase()}-${stamp}@faraz-adiba-wedding`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART:${icsDate(ev.startLocal)}`,
+    `DTEND:${icsDate(ev.endLocal)}`,
+    `SUMMARY:${icsEscape(`${ev.title} - ${C.groom} & ${C.bride}`)}`,
+    `LOCATION:${icsEscape(`${ev.venue}, ${ev.address}`)}`,
+    `DESCRIPTION:${icsEscape(`${ev.title} of ${C.groom} & ${C.bride}. ${ev.dinner}. ${ev.note}`)}`,
+    'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsEscape(ev.title + ' tomorrow')}`, 'TRIGGER:-P1D', 'END:VALARM',
+    'BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${icsEscape(ev.title + ' in 2 hours')}`, 'TRIGGER:-PT2H', 'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ];
+  const blob = new Blob([lines.join('\r\n')], {type:'text/calendar;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${ev.title}-Faraz-Adiba.ics`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
 /* ---- show "Copied" feedback and flash the copy box (only after a real copy) ---- */
@@ -303,6 +350,7 @@ function render(p){
     <div class="div">◆</div>
     <ul class="sched">${ev.schedule.map(r=>`<li><b>${r[0]}</b><br>${r[1]}</li>`).join('')}</ul>
     <p style="font-style:italic">${ev.note}</p>
+    <button class="btn solid" id="cal-btn" type="button" style="margin-top:1rem">Add to calendar</button>
   </section>
 
   <section class="section" id="venue">
@@ -352,8 +400,9 @@ function render(p){
   tick();
 }
 
-/* ---- click handling: cab box, copy, reminder pop-up ---- */
+/* ---- click handling: calendar, cab box, copy, reminder pop-up ---- */
 document.addEventListener('click', e => {
+  if (e.target.closest('#cal-btn')) { if (curEv) addToCalendar(curEv); return; }
   if (e.target.closest('#copy-venue')) { if (curEv) copyVenue(curEv); return; }
   if (e.target.closest('#cab-btn')) { $('#cab').classList.toggle('hide'); return; }
   if (e.target.closest('#rem-x')) { closeRemind(); return; }

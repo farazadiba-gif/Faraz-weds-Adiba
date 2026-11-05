@@ -129,6 +129,8 @@ const CONFIG = {
   nikah:  { start:"2026-11-20T20:15", end:"2026-11-21T02:00" },
   walima: { start:"2026-11-21T19:00", end:"2026-11-22T00:00" },
   music:  { nikah:"music/nikah.mp3", walima:"music/walima.mp3" },   // your files, uploaded next to index.html
+  musicStart: 4,        // seconds: music starts (and restarts when looping) at 0:04
+  musicVolume: 0.10,    // 10% volume (0.10 = 10%)
   nikahEvent: {
     img:"img/img1.jpg",
     title:"Nikah", dateText:"Friday, 20 November 2026", timeText:"8:15 PM",
@@ -471,12 +473,17 @@ addEventListener('resize', fit); addEventListener('orientationchange', () => set
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 fit(); setTimeout(fit, 1600);
 
-/* ---- music: one <audio>, source swapped only on phase change ---- */
-const audio = new Audio(); audio.loop = true; audio.preload = 'auto';
+/* ---- music: one <audio>, starts at 0:04, loops back to 0:04, 10% volume ---- */
+const audio = new Audio(); audio.preload = 'auto'; audio.volume = C.musicVolume;
 let started = false, muted = false;
+audio.addEventListener('loadedmetadata', () => { try{ audio.currentTime = C.musicStart; }catch(e){} });
+audio.addEventListener('ended', () => {                   // custom loop: restart at 0:04, not 0:00
+  try{ audio.currentTime = C.musicStart; }catch(e){}
+  if (!muted) audio.play().catch(()=>{});
+});
 function setTrack(p){
   const src = C.music[p]; if (audio.getAttribute('data-p') === p) return;
-  audio.setAttribute('data-p', p); audio.src = src;
+  audio.setAttribute('data-p', p); audio.src = src; audio.volume = C.musicVolume;
   if (started && !muted) audio.play().catch(()=>{});
 }
 $('#open').addEventListener('click', () => {

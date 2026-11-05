@@ -1,0 +1,18 @@
+{
+  "name": "Faraz & Adiba Wedding",
+  "short_name": "Faraz & Adiba",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f2e8",
+  "theme_color": "#b8924a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "Nikah", "short_name": "Nikah", "url": "./index.html?phase=nikah", "icons": [{ "src": "icon.svg", "sizes": "any" }] },
+    { "name": "Walima", "short_name": "Walima", "url": "./index.html?phase=walima", "icons": [{ "src": "icon.svg", "sizes": "any" }] }
+  ]
+}

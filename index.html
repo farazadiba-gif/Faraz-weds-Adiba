@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wedding Invitation</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b8924a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Faraz &amp; Adiba">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#f7f2e8;--cream:#efe6d6;--beige:#d9c7a8;--gold:#b8924a;--gold-l:#d8bd84;--brown:#6b5236;--ink:#4a3a27}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.15rem;color:var(--ink);background:var(--ivory);line-height:1.6;overflow-x:hidden}
+.ar{font-family:'Amiri',serif;direction:rtl}
+.script{font-family:'Great Vibes',cursive;color:var(--gold);font-weight:400}
+.gold{background:linear-gradient(100deg,#9c7634,#e3cb94 45%,#b8924a 70%,#8f6c2f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.shine{background:none;-webkit-text-fill-color:currentColor;color:#b8924a;animation:tint 6s ease-in-out infinite}
+@keyframes tint{0%,100%{color:#b8924a}25%{color:#d6a55f}50%{color:#9a5b3f}75%{color:#6b5236}}
+/* backdrop: marble + arch + pillars */
+.stage{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:max(2rem,env(safe-area-inset-top)) 1.5rem max(2rem,env(safe-area-inset-bottom));
+background:radial-gradient(ellipse at 50% 30%,#fffaf0 0%,#f1e8d7 55%,#e2d2b5 100%);overflow:hidden}
+.stage::before{content:"";position:absolute;inset:0;opacity:.5;background:
+repeating-linear-gradient(115deg,transparent 0 38px,rgba(184,146,74,.07) 38px 39px),
+radial-gradient(circle at 20% 80%,rgba(255,255,255,.8),transparent 40%),radial-gradient(circle at 85% 15%,rgba(255,255,255,.7),transparent 35%)}
+.arch{position:absolute;left:50%;top:3%;transform:translateX(-50%);width:min(108vw,744px,86vh);height:94%;pointer-events:none}
+.arch path,.arch rect{fill:none;stroke:var(--gold-l);stroke-width:1.5}
+.flora{position:absolute;bottom:-20px;width:min(46vw,300px);height:210px;pointer-events:none;
+background:radial-gradient(circle at 30% 70%,#fff 0 22px,transparent 23px),radial-gradient(circle at 55% 55%,#fffdf8 0 28px,transparent 29px),radial-gradient(circle at 75% 78%,#fff 0 20px,transparent 21px),radial-gradient(circle at 45% 85%,#f4ead6 0 24px,transparent 25px),radial-gradient(circle at 15% 90%,#e8d9b9 0 14px,transparent 15px),radial-gradient(circle at 90% 90%,#e8d9b9 0 12px,transparent 13px);filter:drop-shadow(0 4px 8px rgba(107,82,54,.25))}
+.flora.l{left:-30px}.flora.r{right:-30px;transform:scaleX(-1)}
+
+/* hanging lanterns (the only added animation) */
+.lantern{position:absolute;top:0;height:auto;transform-origin:50% 0;pointer-events:none;animation:sway 5.5s ease-in-out infinite,flicker 3s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(232,190,100,.75))}
+.lantern.l{left:5%;width:34px}
+.lantern.r{right:5%;width:30px;animation-delay:-2.7s,-1s}
+@keyframes sway{0%,100%{rotate:-3deg}50%{rotate:3deg}}
+@keyframes flicker{0%,100%{filter:drop-shadow(0 0 6px rgba(232,190,100,.55))}45%{filter:drop-shadow(0 0 14px rgba(255,214,120,.95))}70%{filter:drop-shadow(0 0 9px rgba(232,190,100,.7))}}
+
+.in{position:relative;z-index:2;max-width:560px;width:100%}
+.frame{border:1px solid var(--gold-l);outline:1px solid rgba(184,146,74,.35);outline-offset:6px;border-radius:200px 200px 6px 6px;padding:2.2rem 1.4rem 2rem;background:rgba(255,252,245,.55);backdrop-filter:blur(2px)}
+.div{display:flex;align-items:center;gap:.8rem;justify-content:center;margin:1rem auto;color:var(--gold);max-width:280px}
+.div::before,.div::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.div::after{transform:scaleX(-1)}
+h1,h2{font-weight:500}
+.names{font-size:clamp(2.3rem,10.5vw,4rem);line-height:1.15}
+.amp{font-size:clamp(2rem,8vw,3rem)}
+h2.script{font-size:clamp(2.4rem,9vw,3.4rem);line-height:1.1;margin-bottom:.4rem}
+.sub{font-size:.95rem;letter-spacing:.14em;text-transform:none;color:var(--brown)}
+.bism{font-size:clamp(2rem,8vw,3rem);line-height:1.6}
+.btn{display:inline-block;margin:.35rem;padding:.7rem 1.4rem;border:1px solid var(--gold);border-radius:40px;background:transparent;color:var(--brown);font:inherit;font-size:1rem;text-decoration:none;cursor:pointer;transition:background .3s,color .3s}
+.btn:hover,.btn:focus-visible{background:var(--gold);color:#fff;outline:none}
+.btn.solid{background:linear-gradient(135deg,#c9a45c,#a97f36);color:#fff;border-color:transparent}
+.section{padding:4.5rem 1.4rem;max-width:760px;margin:auto;text-align:center}
+.section.alt{max-width:none;background:linear-gradient(180deg,var(--cream),var(--ivory))}
+.section.alt>*{max-width:760px;margin-inline:auto}
+.cd{display:flex;gap:.7rem;justify-content:center;margin:1.2rem 0}
+.cd div{flex:1 1 0;min-width:0;max-width:84px;padding:.7rem .2rem;border:1px solid var(--gold-l);border-radius:6px 6px 30px 30px;background:rgba(255,252,245,.7)}
+.cd b{display:block;font-size:clamp(1.4rem,7vw,2rem);font-weight:500;color:var(--brown);font-variant-numeric:tabular-nums}
+.cd span{font-size:.8rem;color:var(--gold)}
+.sched{list-style:none;padding:0;margin:1rem 0}
+.sched li{padding:.6rem 0}.sched li::after{content:"◆";display:block;color:var(--gold);font-size:.55rem;margin-top:.6rem}
+.sched li:last-child::after{display:none}
+.sched b{font-weight:600;letter-spacing:.06em}
+.map{width:100%;height:clamp(240px,60vw,360px);border:1px solid var(--gold-l);border-radius:140px 140px 6px 6px;margin:1.2rem 0;filter:sepia(.25) saturate(.9)}
+.vphoto{display:block;width:100%;height:auto;max-height:420px;object-fit:cover;border:1px solid var(--gold-l);border-radius:140px 140px 6px 6px;margin:1.2rem 0;box-shadow:0 10px 30px rgba(107,82,54,.18)}
+.info{display:grid;gap:1rem;margin:1rem 0;text-align:left}
+@media(min-width:700px){.info{grid-template-columns:1fr 1fr}}
+.info div{padding:1rem 1.2rem;border-left:2px solid var(--gold-l);background:rgba(255,252,245,.6)}
+.info h4{font-weight:600;color:var(--gold);font-size:1rem;margin-bottom:.2rem}
+#gate{position:fixed;inset:0;z-index:50;transition:opacity 1.4s ease,visibility 1.4s}
+#gate.off{opacity:0;visibility:hidden}
+#gate .stage{height:100%;padding-top:clamp(4.5rem,18vh,9.5rem);padding-bottom:6rem}
+.gin{width:min(84vw,520px);max-width:none;transform-origin:center center}
+@media(orientation:landscape) and (max-height:520px){.arch{width:min(84vw,432px)}.gin{width:min(70vw,520px)}#gate .stage{padding-top:.8rem;padding-bottom:.8rem}#gate .s2{margin-top:.4rem}}
+#gate .bism{font-size:clamp(2.42rem,9.67vw,3.88rem);line-height:1.6;margin-bottom:.4rem;white-space:nowrap}
+#gate .names{font-size:clamp(2.69rem,12vw,4.52rem);line-height:1.25;white-space:nowrap}
+#gate .amp{font-size:clamp(1.98rem,7.08vw,2.82rem);line-height:1}
+#gate .div{margin:.6rem auto;font-size:1.38rem}
+#gate .s2{margin-top:clamp(1.2rem,5vh,3rem)}
+@media(orientation:landscape) and (max-height:520px){#gate .s2{margin-top:.4rem}}
+#gate #open{font-size:1.44rem;padding:1.01rem 2.02rem;margin-top:clamp(.8rem,3.5vh,1.6rem)}
+#g-msg{font-size:1.64rem;line-height:1.35;margin-bottom:.5rem}
+#g-date{font-size:1.56rem;margin-bottom:.4rem}
+/* cinematic opening: one sequence */
+.seq{opacity:0;animation:rise 1s ease forwards}
+.s1{animation-delay:.2s}.s2{animation-delay:.8s}.s3{animation-delay:1.3s}.s4{animation-delay:1.7s}.s5{animation-delay:2.1s}
+.arch{stroke-dasharray:1800;animation:draw 2s ease forwards}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes draw{from{stroke-dashoffset:1800}to{stroke-dashoffset:0}}
+#mute{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:40;width:46px;height:46px;border-radius:50%;border:1px solid var(--gold);background:rgba(255,252,245,.9);color:var(--brown);font-size:1.1rem;cursor:pointer;display:none}
+#veil{position:fixed;inset:0;z-index:45;background:var(--ivory);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;opacity:0;visibility:hidden;transition:opacity 1.2s,visibility 1.2s}
+#veil.on{opacity:1;visibility:visible}
+.hide{display:none!important}
+footer{padding:3rem 1.4rem 5rem;text-align:center;font-size:.9rem;color:var(--brown)}
+@media(prefers-reduced-motion:reduce){.shine,.lantern{animation:none!important}*{animation-duration:.01s!important;animation-delay:0s!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<!-- ============ EDIT THIS BLOCK ============ -->
+<script>
+const CONFIG = {
+  bride: "Dr Adiba Saad", groom: "Dr Abdul Faraz",
+  message: "With the blessings of Allah, together with our families, we joyfully invite you to celebrate the marriage of",
+  // Local times (24h). nikahEnd = moment site switches to Thank-You, then Walima.
+  nikah:  { start:"2026-11-20T20:15", end:"2026-11-21T02:00" },
+  walima: { start:"2026-11-21T19:00", end:"2026-11-22T00:00" },
+  music:  { nikah:"music/nikah.mp3", walima:"music/walima.mp3" },   // your files, uploaded next to index.html
+  nikahEvent: {
+    img:"img/img1.jpg",
+    title:"Nikah", dateText:"Friday, 20 November 2026", timeText:"8:15 PM",
+    dinner:"Dinner follows from 9:00 PM",
+    schedule:[["8:30 PM","Guest arrival"],["8:30 PM","Dua & congratulations"],["9:00 PM","Dinner"]],
+    note:"Kindly arrive 10 minutes early.",
+    venue:"Taj Falaknuma Palace", address:"Engine Bowli, Falaknuma, Hyderabad, Telangana 500053",
+    mapQuery:"Taj Falaknuma Palace, Engine Bowli, Falaknuma, Hyderabad, Telangana 500053",
+    landmarks:["Masjid-e-Qasr-e-Falaknuma","Kaveli Ki Masjid","Madina Function Hall"], parking:"Free outdoor parking at the palace, with valet service at the entrance."
+  },
+  walimaEvent: {
+    img:"img/img2.jpg",
+    title:"Walima", dateText:"Saturday, 21 November 2026", timeText:"7:00 PM",
+    dinner:"Dinner follows from 9:00 PM",
+    schedule:[["7:00 PM","Guest arrival"],["8:00 PM","Bride & groom entrance"],["9:00 PM","Dinner"],["10:30 PM","Dua & photographs"]],
+    note:"We look forward to celebrating with you.",
+    venue:"Zoroastrian Club Function Hall", address:"1-8-183 to 185, Sardar Patel Rd, Jogani, Ramgopalpet, Secunderabad, Hyderabad, Telangana 500003",
+    mapQuery:"Zoroastrian Club Function Hall, 1-8-183 to 185, Sardar Patel Rd, Ramgopalpet, Secunderabad, Telangana 500003",
+    landmarks:["Zoroastrian Club Function Hall, beside Pin Code Hotel, SP Road, Secunderabad"], parking:"Parking details will be shared soon."
+  },
+  contacts:[{name:"Family Contact 1",phone:"+917569623353"}],
+  closing:"We are grateful for your presence, your love, and your prayers."
+};
+</script>
+<!-- ========================================= -->
+
+<div id="gate">
+  <div class="stage">
+    <svg class="arch" viewBox="0 0 600 900" preserveAspectRatio="none" aria-hidden="true"><path d="M60 900V330Q60 60 300 30Q540 60 540 330V900"/><path d="M90 900V340Q90 100 300 70Q510 100 510 340V900" opacity=".5"/><rect x="30" y="300" width="22" height="600"/><rect x="548" y="300" width="22" height="600"/></svg>
+    <div class="flora l"></div><div class="flora r"></div>
+    <div class="in gin">
+      <div class="ar bism seq s1"><span class="shine">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span></div>
+      <div class="seq s2"><div class="script names shine" id="g-b"></div><div class="script amp shine">&amp;</div><div class="script names shine" id="g-g"></div></div>
+      <div class="div seq s3">◆</div>
+      <p class="seq s3" id="g-msg" style="font-style:italic"></p>
+      <p class="seq s4" id="g-date" style="letter-spacing:.12em"></p>
+      <button class="btn solid seq s5" id="open">Tap to open &amp; listen</button>
+    </div>
+  </div>
+</div>
+
+<button id="mute" aria-label="Toggle music">♪</button>
+
+<div id="veil">
+  <div class="ar script" style="font-size:2.4rem;direction:rtl">جَزَاكُمُ اللَّهُ خَيْرًا</div>
+  <h2 class="script" style="font-size:3.2rem;margin:.5rem 0">Thank you</h2>
+  <p style="max-width:420px">Thank you for joining us at the Nikah and for your beautiful prayers. Our Walima invitation is opening now.</p>
+</div>
+
+<main id="app"></main>
+
+<script>
+const C = CONFIG, $ = s => document.querySelector(s);
+const T = k => new Date(C[k].start).getTime(), E = k => new Date(C[k].end).getTime();
+const q = new URLSearchParams(location.search);          // ?phase=nikah | walima  for previewing
+const phase = () => q.get('phase') || (Date.now() >= E('nikah') ? 'walima' : 'nikah');
+const enc = encodeURIComponent;
+const toCount = () => { const c = $('#count'); if (c) window.scrollTo({top:c.offsetTop, behavior:'instant'}); };
+const fmt = n => String(n).padStart(2,'0');
+
+/* ---- hanging lanterns ---- */
+const LANTERN = c => `<svg class="lantern ${c}" viewBox="0 0 40 120" aria-hidden="true">
+  <line x1="20" y1="0" x2="20" y2="40" stroke="#d8bd84" stroke-width="1.2"/>
+  <circle cx="20" cy="40" r="2.2" fill="#b8924a"/>
+  <path d="M13 50h14l-3-9h-8z" fill="#b8924a"/>
+  <path d="M13 50h14c4 11 4 27 0 38H13c-4-11-4-27 0-38z" fill="#f1d894" fill-opacity=".85" stroke="#b8924a" stroke-width="1.2"/>
+  <path d="M20 50v38M16.5 50c-2 11-2 27 0 38M23.5 50c2 11 2 27 0 38" stroke="#b8924a" stroke-width=".8" fill="none" opacity=".7"/>
+  <path d="M13 88h14l-2 6H15z" fill="#b8924a"/>
+  <line x1="20" y1="94" x2="20" y2="108" stroke="#d8bd84" stroke-width="1"/>
+  <circle cx="20" cy="110" r="2.4" fill="#d8bd84"/>
+</svg>`;
+const LAMPS = LANTERN('l') + LANTERN('r');
+$('#gate .stage').insertAdjacentHTML('afterbegin', LAMPS);
+
+$('#g-b').textContent = C.groom; $('#g-g').textContent = C.bride;
+$('#g-msg').textContent = C.message;
+const dateTxt = () => (phase()==='walima'?C.walimaEvent:C.nikahEvent).dateText;
+$('#g-date').textContent = dateTxt();
+
+function render(p){
+  const ev = p==='walima' ? C.walimaEvent : C.nikahEvent, target = T(p);
+  document.title = `${C.groom} & ${C.bride} – ${ev.title}`;
+  $('#app').innerHTML = `
+  <section class="stage" style="min-height:92svh">
+    ${LAMPS}
+    <svg class="arch" viewBox="0 0 600 900" preserveAspectRatio="none" aria-hidden="true" style="animation:none"><path d="M60 900V330Q60 60 300 30Q540 60 540 330V900"/><rect x="30" y="300" width="22" height="600"/><rect x="548" y="300" width="22" height="600"/></svg>
+    <div class="flora l"></div><div class="flora r"></div>
+    <div class="in frame">
+      <div class="ar shine" style="font-size:2rem">بِسْمِ اللَّهِ</div>
+      <p class="sub">${p==='walima'?'You are invited to the Walima of':'You are invited to the Nikah of'}</p>
+      <div class="script names shine">${C.groom}</div><div class="script amp shine">&amp;</div><div class="script names shine">${C.bride}</div>
+      <div class="div">◆</div>
+      <p>${C.message}</p>
+      <p style="margin-top:.8rem"><b>${ev.dateText}</b><br>${ev.timeText}</p>
+      <a class="btn solid" href="#details">View details</a>
+    </div>
+  </section>
+
+  <section class="section" id="count">
+    <h2 class="script shine">${p==='walima'?'Walima begins in':'The Nikah begins in'}</h2>
+    <div class="cd" role="timer" aria-live="off">
+      <div><b id="d">00</b><span>Days</span></div><div><b id="h">00</b><span>Hours</span></div>
+      <div><b id="m">00</b><span>Minutes</span></div><div><b id="s">00</b><span>Seconds</span></div>
+    </div>
+    <p id="cdnote" class="sub"></p>
+  </section>
+
+  <section class="section alt" id="details">
+    <h2 class="script">${ev.title} details</h2>
+    <p><b>${ev.dateText}</b> &middot; ${ev.timeText}</p>
+    <p>${ev.dinner}</p>
+    <div class="div">◆</div>
+    <ul class="sched">${ev.schedule.map(r=>`<li><b>${r[0]}</b><br>${r[1]}</li>`).join('')}</ul>
+    <p style="font-style:italic">${ev.note}</p>
+  </section>
+
+  <section class="section" id="venue">
+    <h2 class="script">The venue</h2>
+    <p><b>${ev.venue}</b><br>${ev.address}</p>
+    <img class="vphoto" src="${ev.img}" alt="${ev.venue}" onerror="this.remove()">
+    <iframe class="map" title="Map of ${ev.venue}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=${enc(ev.mapQuery)}&z=16&hl=en&ie=UTF8&output=embed"></iframe>
+    <div>
+      <a class="btn solid" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${enc(ev.mapQuery)}">Open in Google Maps</a>
+      <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${enc(ev.mapQuery)}">Get directions</a>
+      <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${enc(ev.mapQuery)}&travelmode=driving&dir_action=navigate">Start navigation</a>
+    </div>
+    <div class="info">
+      <div><h4>Nearby landmarks</h4>${ev.landmarks.join('<br>')}</div>
+      <div><h4>Parking</h4>${ev.parking}</div>
+    </div>
+  </section>
+
+  <section class="section alt" id="contact">
+    <h2 class="script">Contact us</h2>
+    <p>For any questions on the day, please reach out to us.</p>
+    ${C.contacts.map(c=>`<p style="margin-top:.8rem"><b>${c.name}</b><br>
+      <a class="btn" href="tel:${c.phone}">Call</a>
+      <a class="btn" target="_blank" rel="noopener" href="https://wa.me/${c.phone.replace(/\D/g,'')}">WhatsApp</a></p>`).join('')}
+  </section>
+
+  <section class="section" id="dua">
+    <div class="ar gold" style="font-size:1.9rem;line-height:2">بَارَكَ اللَّهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</div>
+    <p style="font-style:italic;margin-top:.6rem">May Allah bless you both, shower His blessings upon you, and unite you in goodness.</p>
+    <div class="div">◆</div>
+    <p>${C.closing}</p>
+    <h2 class="script" style="margin-top:1rem">${C.groom} &amp; ${C.bride}</h2>
+  </section>
+  <footer>Made with love</footer>`;
+  tick();
+}
+
+/* ---- countdown ---- */
+function tick(){
+  const p = phase(), diff = Math.max(0, T(p) - Date.now());
+  const v = {d:Math.floor(diff/864e5), h:Math.floor(diff/36e5)%24, m:Math.floor(diff/6e4)%60, s:Math.floor(diff/1e3)%60};
+  for (const k in v){ const el = $('#'+k); if (el) el.textContent = fmt(v[k]); }
+  const n = $('#cdnote'); if (n) n.textContent = diff ? '' : (p==='walima' ? 'The Walima is under way. Welcome!' : 'The Nikah is under way. Please keep us in your duas.');
+}
+
+/* ---- fit opening screen to any screen size ---- */
+function fit(){
+  const g = $('.gin'), st = $('#gate .stage'); if (!g || !st) return;
+  g.style.transform = 'none';
+  const cs = getComputedStyle(st), avail = st.clientHeight - parseFloat(cs.paddingBottom) - parseFloat(cs.paddingTop) - 24;
+  const k = Math.min(1, avail / g.offsetHeight);
+  g.style.transform = k < 1 ? `scale(${k})` : 'none';
+  keepBismInside();
+}
+function keepBismInside(){
+  const b = $('#gate .bism'), ar = $('#gate .arch'); if (!b || !ar) return;
+  b.style.fontSize = '';
+  const rg = document.createRange(); rg.selectNodeContents(b);
+  const tr = rg.getBoundingClientRect(), a = ar.getBoundingClientRect();
+  const sx = a.width / 600, sy = a.height / 900;
+  const yv = Math.max(70, (tr.top - a.top) / sy - 12);        // top edge of text in arch units (minus animation offset)
+  let half;                                                   // half-width of the inner border at that height
+  if (yv >= 340) half = 210;
+  else { const t = (480 - Math.sqrt(480*480 - 840*(340 - yv))) / 420; half = 210 - 210*t*t; }
+  const allowed = 2 * half * sx * 0.92;
+  if (tr.width > allowed) b.style.fontSize = (parseFloat(getComputedStyle(b).fontSize) * Math.max(.6, allowed / tr.width)) + 'px';
+}
+addEventListener('resize', fit); addEventListener('orientationchange', () => setTimeout(fit, 300));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+fit(); setTimeout(fit, 1600);
+
+/* ---- music: one <audio>, source swapped only on phase change ---- */
+const audio = new Audio(); audio.loop = true; audio.preload = 'auto';
+let started = false, muted = false;
+function setTrack(p){
+  const src = C.music[p]; if (audio.getAttribute('data-p') === p) return;
+  audio.setAttribute('data-p', p); audio.src = src;
+  if (started && !muted) audio.play().catch(()=>{});
+}
+$('#open').addEventListener('click', () => {
+  started = true; setTrack(cur); audio.play().catch(()=>{});
+  toCount(); $('#gate').classList.add('off'); $('#mute').style.display = 'block';
+  setTimeout(()=>$('#gate').classList.add('hide'), 1500);
+});
+$('#mute').addEventListener('click', () => {
+  muted = !muted; muted ? audio.pause() : audio.play().catch(()=>{});
+  $('#mute').textContent = muted ? '✕' : '♪';
+});
+
+/* ---- automatic phase switching ---- */
+let cur = phase();
+render(cur); audio.setAttribute('data-p','');
+async function check(){
+  const p = phase();
+  if (p === cur) return;
+  const veil = $('#veil'); veil.classList.add('on');          // thank-you transition
+  await new Promise(r => setTimeout(r, 6000));
+  cur = p; render(p); $('#g-date').textContent = dateTxt(); setTrack(p);
+  toCount(); veil.classList.remove('on');
+}
+setInterval(()=>{ tick(); check(); }, 1000);
+setTrack(cur);
+</script>
+</body>
+</html>

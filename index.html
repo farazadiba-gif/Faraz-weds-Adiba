@@ -130,7 +130,7 @@ const CONFIG = {
   walima: { start:"2026-11-21T19:00", end:"2026-11-22T00:00" },
   music:  { nikah:"music/nikah.mp3", walima:"music/walima.mp3" },   // your files, uploaded next to index.html
   musicStart: 4,        // seconds: music starts (and restarts when looping) at 0:04
-  musicVolume: 0.10,    // 10% volume (0.10 = 10%)
+  musicVolume: 0.50,    // 50% volume (0.50 = 50%)
   nikahEvent: {
     img:"img/img1.jpg",
     title:"Nikah", dateText:"Friday, 20 November 2026", timeText:"8:15 PM",
@@ -150,7 +150,7 @@ const CONFIG = {
     schedule:[["7:00 PM","Guest arrival"],["8:00 PM","Bride & groom entrance"],["9:00 PM","Dinner"],["10:30 PM","Dua & photographs"]],
     note:"We look forward to celebrating with you.",
     venue:"Zoroastrian Club Function Hall", address:"1-8-183 to 185, Sardar Patel Rd, Jogani, Ramgopalpet, Secunderabad, Hyderabad, Telangana 500003",
-    mapQuery:"Zoroastrian Club Function Hall, 1-8-183 to 185, Sardar Patel Rd, Ramgopalpet, Secunderabad, Telangana 500003",
+    mapQuery:"Zoroastrian Club Function Hall, 1-8-183 to 185, Sardar Patel Rd, Jogani, Ramgopalpet, Secunderabad, Hyderabad, Telangana 500003",
     landmarks:["Zoroastrian Club Function Hall, beside Pin Code Hotel, SP Road, Secunderabad"], parking:"Parking details will be shared soon."
   },
   contacts:[{name:"Family Contact 1",phone:"+917569623353"}],
@@ -473,33 +473,56 @@ addEventListener('resize', fit); addEventListener('orientationchange', () => set
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 fit(); setTimeout(fit, 1600);
 
-/* ---- music: one <audio>, starts at 0:04, loops back to 0:04, 10% volume ---- */
-const audio = new Audio(); audio.preload = 'auto'; audio.volume = C.musicVolume;
-let started = false, muted = false;
-audio.addEventListener('loadedmetadata', () => { try{ audio.currentTime = C.musicStart; }catch(e){} });
+/* ---- music: one <audio>, starts at 0:04, loops back to 0:04, 50% volume ---- */
+const audio = new Audio();
+audio.preload = 'auto';
+audio.volume = C.musicVolume;
+let started = false, muted = false, seeked = false;
+
+const safePlay = () => audio.play().catch(err => console.warn('Audio play failed:', err));
+const seekStart = () => {
+  if (seeked || !C.musicStart) return;
+  try { audio.currentTime = C.musicStart; seeked = true; } catch(e){}
+};
+
+audio.addEventListener('loadedmetadata', seekStart);
+audio.addEventListener('canplay', seekStart);
+audio.addEventListener('error', () =>
+  console.error('Audio file failed to load:', audio.src, audio.error));
 audio.addEventListener('ended', () => {                   // custom loop: restart at 0:04, not 0:00
-  try{ audio.currentTime = C.musicStart; }catch(e){}
-  if (!muted) audio.play().catch(()=>{});
+  try { audio.currentTime = C.musicStart; } catch(e){}
+  if (!muted) safePlay();
 });
+
 function setTrack(p){
-  const src = C.music[p]; if (audio.getAttribute('data-p') === p) return;
-  audio.setAttribute('data-p', p); audio.src = src; audio.volume = C.musicVolume;
-  if (started && !muted) audio.play().catch(()=>{});
+  if (audio.getAttribute('data-p') === p) return;
+  audio.setAttribute('data-p', p);
+  seeked = false;
+  audio.src = C.music[p];
+  audio.volume = C.musicVolume;
+  audio.load();
+  if (started && !muted) safePlay();
 }
+
 $('#open').addEventListener('click', () => {
-  started = true; setTrack(cur); audio.play().catch(()=>{});
+  started = true;
+  setTrack(cur);
+  audio.volume = C.musicVolume;
+  safePlay();                                             // runs inside the tap, so autoplay is allowed
   toCount(); $('#gate').classList.add('off'); $('#mute').style.display = 'block';
-  setTimeout(()=>$('#gate').classList.add('hide'), 1500);
+  setTimeout(() => $('#gate').classList.add('hide'), 1500);
 });
+
 $('#mute').addEventListener('click', () => {
-  muted = !muted; muted ? audio.pause() : audio.play().catch(()=>{});
+  muted = !muted;
+  muted ? audio.pause() : safePlay();
   $('#mute').textContent = muted ? '✕' : '♪';
 });
 
 /* ---- automatic phase switching ---- */
 let cur = phase();
 loadShown();
-render(cur); audio.setAttribute('data-p','');
+render(cur);
 async function check(){
   const p = phase();
   if (p === cur) return;

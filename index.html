@@ -106,6 +106,13 @@ h2.script{font-size:clamp(2.4rem,9vw,3.4rem);line-height:1.1;margin-bottom:.4rem
 .copybox.flash textarea{background:#fff7e3}
 .copybox .btn{margin:0}
 .copybox .btn.done{background:var(--brown);color:#fff;border-color:var(--brown)}
+/* visit reminder pop-up */
+#remind{position:fixed;inset:0;z-index:47;background:rgba(74,58,39,.45);display:flex;align-items:center;justify-content:center;padding:1.2rem;opacity:0;visibility:hidden;transition:opacity .6s,visibility .6s}
+#remind.on{opacity:1;visibility:visible}
+.rbox{position:relative;max-width:380px;width:100%;padding:2.4rem 1.6rem 1.8rem;text-align:center;background:var(--ivory);border:1px solid var(--gold-l);outline:1px solid rgba(184,146,74,.35);outline-offset:5px;border-radius:200px 200px 8px 8px;box-shadow:0 20px 50px rgba(74,58,39,.3)}
+.rbox h2.script{font-size:clamp(2.6rem,10vw,3.4rem);margin-bottom:.2rem}
+.rbox p{margin:.4rem 0}
+#rem-x{position:absolute;top:.5rem;right:.7rem;background:none;border:0;font-size:1.5rem;line-height:1;color:var(--brown);cursor:pointer;padding:.3rem .5rem}
 footer{padding:3rem 1.4rem 5rem;text-align:center;font-size:.9rem;color:var(--brown)}
 @media(prefers-reduced-motion:reduce){.shine,.lantern{animation:none!important}*{animation-duration:.01s!important;animation-delay:0s!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
@@ -142,7 +149,8 @@ const CONFIG = {
     landmarks:["Zoroastrian Club Function Hall, beside Pin Code Hotel, SP Road, Secunderabad"], parking:"Parking details will be shared soon."
   },
   contacts:[{name:"Family Contact 1",phone:"+917569623353"}],
-  closing:"We are grateful for your presence, your love, and your prayers."
+  closing:"We are grateful for your presence, your love, and your prayers.",
+  reminders:[24, 12]   // pop-up shows this many hours BEFORE the Nikah start time
 };
 </script>
 <!-- ========================================= -->
@@ -168,6 +176,20 @@ const CONFIG = {
   <div class="ar script" style="font-size:2.4rem;direction:rtl">جَزَاكُمُ اللَّهُ خَيْرًا</div>
   <h2 class="script" style="font-size:3.2rem;margin:.5rem 0">Thank you</h2>
   <p style="max-width:420px">Thank you for joining us at the Nikah and for your beautiful prayers. Our Walima invitation is opening now.</p>
+</div>
+
+<div id="remind" role="dialog" aria-modal="true" aria-labelledby="rem-title">
+  <div class="rbox">
+    <button id="rem-x" type="button" aria-label="Close">×</button>
+    <div class="ar gold" style="font-size:1.6rem;line-height:1.8">بِسْمِ اللَّهِ</div>
+    <h2 class="script" id="rem-title">Kindly Visit</h2>
+    <p class="script shine" style="font-size:2.2rem;line-height:1.2">Faraz &amp; Adiba</p>
+    <p class="sub" style="margin-top:.6rem">Wedding Invitation</p>
+    <div class="div">◆</div>
+    <p id="rem-msg" style="font-weight:600"></p>
+    <p>We would be honoured by your presence. Please take a moment to view the event details and venue.</p>
+    <button class="btn solid" id="rem-go" type="button">View details</button>
+  </div>
 </div>
 
 <main id="app"></main>
@@ -330,13 +352,41 @@ function render(p){
   tick();
 }
 
-/* ---- show / hide cab options (opening does NOT copy) ---- */
-/* ---- copy only when the Copy button is pressed ---- */
+/* ---- click handling: cab box, copy, reminder pop-up ---- */
 document.addEventListener('click', e => {
   if (e.target.closest('#copy-venue')) { if (curEv) copyVenue(curEv); return; }
-  if (!e.target.closest('#cab-btn')) return;
-  $('#cab').classList.toggle('hide');
+  if (e.target.closest('#cab-btn')) { $('#cab').classList.toggle('hide'); return; }
+  if (e.target.closest('#rem-x')) { closeRemind(); return; }
+  if (e.target.closest('#rem-go')) { closeRemind(); $('#details').scrollIntoView({behavior:'smooth'}); return; }
 });
+
+/* ---- reminder pop-up: 24 hours before and 12 hours before the Nikah ---- */
+const H = 36e5;
+const remindList = C.reminders.map(h => ({ h, at: T('nikah') - h * H }));   // exact trigger times
+let shownMem = {};                                                          // fallback if storage is blocked
+function loadShown(){
+  try{ shownMem = Object.assign(JSON.parse(localStorage.getItem('fa_shown') || '{}'), shownMem); }catch(e){}
+}
+function markShown(h){
+  shownMem[h] = true;
+  try{ localStorage.setItem('fa_shown', JSON.stringify(shownMem)); }catch(e){}
+}
+function showRemind(h){
+  $('#rem-msg').textContent = `The Nikah begins in ${h} hours. We would be delighted to see you.`;
+  $('#remind').classList.add('on');
+}
+function closeRemind(){ $('#remind').classList.remove('on'); }
+function maybeRemind(){
+  if (!$('#gate').classList.contains('off')) return;   // not while the opening screen is up
+  if ($('#veil').classList.contains('on')) return;     // not during the Thank-you transition
+  if ($('#remind').classList.contains('on')) return;   // already showing
+  const now = Date.now();
+  const due = remindList.filter(r => now >= r.at && !shownMem[r.h]);
+  if (!due.length) return;
+  due.forEach(r => markShown(r.h));                    // mark all due ones as shown
+  const latest = due.reduce((a, b) => (a.at > b.at ? a : b));   // show the most recent one only
+  showRemind(latest.h);
+}
 
 /* ---- countdown ---- */
 function tick(){
@@ -392,6 +442,7 @@ $('#mute').addEventListener('click', () => {
 
 /* ---- automatic phase switching ---- */
 let cur = phase();
+loadShown();
 render(cur); audio.setAttribute('data-p','');
 async function check(){
   const p = phase();
@@ -401,7 +452,7 @@ async function check(){
   cur = p; render(p); $('#g-date').textContent = dateTxt(); setTrack(p);
   toCount(); veil.classList.remove('on');
 }
-setInterval(()=>{ tick(); check(); }, 1000);
+setInterval(()=>{ tick(); check(); maybeRemind(); }, 1000);
 setTrack(cur);
 </script>
 </body>
